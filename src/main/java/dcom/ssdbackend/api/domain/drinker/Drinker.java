@@ -1,9 +1,9 @@
 package dcom.ssdbackend.api.domain.drinker;
 
+import dcom.ssdbackend.api.domain.dispenser.Dispenser;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Builder
@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Drinker {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     @Column
     private String name;
@@ -26,5 +25,11 @@ public class Drinker {
     private Integer totalCapacity;
 
     @Column
-    private Integer currentDrinks;
+    private Integer currentDrink;
+
+    @Column
+    private Integer lastDrinkTimeStamp;
+
+    @ManyToOne
+    private Dispenser dispenser;
 }
