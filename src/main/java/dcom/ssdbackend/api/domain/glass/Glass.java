@@ -1,4 +1,4 @@
-package dcom.ssdbackend.api.domain.drinker;
+package dcom.ssdbackend.api.domain.glass;
 
 import dcom.ssdbackend.api.domain.dispenser.Dispenser;
 import lombok.*;
@@ -11,12 +11,12 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Drinker {
+public class Glass {
     @Id
     private String id;
 
     @Column
-    private String name;
+    private String drinkerName;
 
     @Column
     private String detail;

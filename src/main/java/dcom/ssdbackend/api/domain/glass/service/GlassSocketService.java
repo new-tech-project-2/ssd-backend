@@ -1,4 +1,4 @@
-package dcom.ssdbackend.api.domain.drinker.service;
+package dcom.ssdbackend.api.domain.glass.service;
 
 import org.springframework.stereotype.Service;
 
@@ -10,7 +10,7 @@ import java.util.Set;
 
 @Service
 @ServerEndpoint("/ws/socket/drinker")
-public class DrinkerSocketService {
+public class GlassSocketService {
 
     private static Set<Session> clients =
             Collections.synchronizedSet(new HashSet<Session>());
