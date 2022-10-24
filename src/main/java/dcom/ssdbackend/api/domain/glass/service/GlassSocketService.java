@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-@ServerEndpoint("/ws/socket/drinker")
+@ServerEndpoint("/ws/socket/glass")
 public class GlassSocketService {
 
     private static Set<Session> clients =

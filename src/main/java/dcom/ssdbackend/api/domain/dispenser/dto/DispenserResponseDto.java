@@ -1,13 +1,8 @@
 package dcom.ssdbackend.api.domain.dispenser.dto;
 
 import dcom.ssdbackend.api.domain.dispenser.Dispenser;
-import dcom.ssdbackend.api.domain.drinker.Drinker;
-import dcom.ssdbackend.api.domain.drinker.dto.DrinkerResponseDto;
 import io.swagger.annotations.ApiModel;
 import lombok.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class DispenserResponseDto {
 

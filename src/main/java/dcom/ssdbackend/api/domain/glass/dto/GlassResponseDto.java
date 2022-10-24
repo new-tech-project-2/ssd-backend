@@ -8,25 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GlassResponseDto {
-
-    @ApiModel(value = "술잔 등록")
-    @Builder
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GlassRegister {
-        private Boolean success;
-        private String drinkerToken;
-
-        public static GlassRegister of(Glass glass) {
-            return GlassRegister.builder()
-                    .success(true)
-                    .drinkerToken(glass.getDrinkerName())
-                    .build();
-        }
-    }
-
     @ApiModel(value = "술잔 정보 조회")
     @Builder
     @Getter

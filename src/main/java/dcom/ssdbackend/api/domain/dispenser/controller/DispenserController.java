@@ -1,45 +1,52 @@
 package dcom.ssdbackend.api.domain.dispenser.controller;
 
+import dcom.ssdbackend.api.domain.dispenser.Dispenser;
 import dcom.ssdbackend.api.domain.dispenser.dto.DispenserResponseDto;
+import dcom.ssdbackend.api.domain.dispenser.repository.DispenserRepository;
 import dcom.ssdbackend.api.domain.dispenser.service.DispenserService;
-import dcom.ssdbackend.api.domain.drinker.dto.DrinkerResponseDto;
+import dcom.ssdbackend.api.global.jwt.JwtProvider;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Api(tags = {"Dispenser Controller"})
+@RequestMapping("/dispenser")
 @RestController
 @RequiredArgsConstructor
 public class DispenserController {
-
+    private final DispenserRepository dispenserRepository;
     private final DispenserService dispenserService;
 
-    @ApiOperation("디스펜서의 정보 조회")
-    @GetMapping("/dispenser")
+    private final JwtProvider jwtProvider;
+
+    @ApiOperation("사용자 로그인")
+    @PostMapping ("/login")
+    public String drinkerLogin() {
+        Dispenser dispenser = dispenserRepository.findById(jwtProvider.getDispenserTokenInHeader()).get();
+        return jwtProvider.generateDrinkerToken(dispenser.getId());
+    }
+
+    @ApiOperation("디스펜서 정보 조회")
+    @GetMapping("/getdispenser")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<DispenserResponseDto.DispenserInfo> dispenserInfo() {
-        return ResponseEntity.ok(dispenserService.dispenserInfo());
+    public ResponseEntity<DispenserResponseDto.DispenserInfo> getDispenser() {
+        return ResponseEntity.ok(dispenserService.getDispenser());
     }
 
     @ApiOperation("디스펜서 시작")
-    @PostMapping("/dispenser")
+    @PostMapping("/startdispenser")
     public ResponseEntity<Void> dispenserStart() {
         dispenserService.dispenserStart();
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation("디스펜서 중지")
-    @DeleteMapping("/dispenser")
+    @PostMapping("/stopdispenser")
     public ResponseEntity<Void> dispenserStop() {
         dispenserService.dispenserStop();
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

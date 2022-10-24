@@ -10,7 +10,7 @@ public class GlassRequestDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GlassModify {
+    public static class UpdateGlass {
         private String drinkerName;
         private String detail;
         private Integer totalCapacity;

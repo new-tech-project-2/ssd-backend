@@ -14,37 +14,31 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(tags = {"Drinker Controller"})
+@Api(tags = {"Glass Controller"})
+@RequestMapping("/glass")
 @RestController
 @RequiredArgsConstructor
 public class GlassController {
    private final GlassService glassService;
 
-    @ApiOperation("사용자의 술잔 등록")
-    @PostMapping ("/auth")
+    @ApiOperation("술잔 정보 조회")
+    @GetMapping("/getglass")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<GlassResponseDto.GlassRegister> glassRegister() {
-        return ResponseEntity.ok(glassService.glassRegister());
-    }
-
-    @ApiOperation("사용자의 술잔 정보 조회")
-    @GetMapping("/glass")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<GlassResponseDto.GlassInfo>> glassInfo() {
-        return ResponseEntity.ok(glassService.glassInfo());
+    public ResponseEntity<List<GlassResponseDto.GlassInfo>> getGlass() {
+        return ResponseEntity.ok(glassService.getGlass());
     }
 
     @ApiOperation("술잔 정보 수정")
-    @PostMapping("/glass/{glassId}")
-    public ResponseEntity<Void> glassModify(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId, @Validated @RequestBody GlassRequestDto.GlassModify glassModify) {
-        glassService.glassModify(glassId,glassModify);
+    @PatchMapping("/updateglass/{glassId}")
+    public ResponseEntity<Void> updateGlass(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId, @Validated @RequestBody GlassRequestDto.UpdateGlass updateGlass) {
+        glassService.updateGlass(glassId,updateGlass);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation("술잔 정보 삭제")
-    @DeleteMapping("/glass/{glassId}")
-    public ResponseEntity<Void> glassRemove(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId) {
-        glassService.glassRemove(glassId);
+    @DeleteMapping("/deleteglass/{glassId}")
+    public ResponseEntity<Void> deleteGlass(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId) {
+        glassService.deleteGlass(glassId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
