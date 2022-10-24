@@ -1,46 +1,52 @@
 package dcom.ssdbackend.api.domain.dispenser.service;
 
-import lombok.extern.slf4j.Slf4j;
+import dcom.ssdbackend.api.domain.dispenser.Dispenser;
+import dcom.ssdbackend.api.domain.dispenser.dto.DispenserResponseDto;
+import dcom.ssdbackend.api.domain.dispenser.repository.DispenserRepository;
+import dcom.ssdbackend.api.global.jwt.JwtProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
-import java.util.*;
-
-@Slf4j
 @Service
-@ServerEndpoint(value="/ws/socket")
+@RequiredArgsConstructor
 public class DispenserService {
-    private static Set<Session> clients =
-            Collections.synchronizedSet(new HashSet<Session>());
+    private final DispenserRepository dispenserRepository;
 
-    @OnOpen
-    public void onOpen(Session session) throws Exception{
-        if(!clients.contains(session)) {
-            clients.add(session);
-            System.out.println("Open Session : " + session.toString());
-            session.getBasicRemote().sendText(session.toString());
-        }
-        else {
-            System.out.println("Already Opened Session : " + session.toString());
-        }
+    private final JwtProvider jwtProvider;
+
+
+
+    public DispenserResponseDto.DispenserInfo getDispenser(){
+        String dispenserId = jwtProvider.getDispenserToken(jwtProvider.getDrinkerTokenInHeader());
+        Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
+        return DispenserResponseDto.DispenserInfo.of(dispenser);
     }
 
-    @OnMessage
-    public void onMessage(String message, Session session) throws Exception{
-        System.out.println("Sender : " + session.toString() + " / Receive Message : " + message);
-        for(Session s : clients) {
-            System.out.println("Receive : " + s.toString() + " / Receive Message : " + message);
-            s.getBasicRemote().sendText(message);
-        }
+    public void dispenserStart(){
+        String dispenserId = jwtProvider.getDispenserToken(jwtProvider.getDrinkerTokenInHeader());
+        Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
+
+            dispenser.setStarted(true);
+
+            dispenser.builder()
+                    .id(dispenser.getId())
+                    .started(dispenser.isStarted())
+                    .build();
+
+            dispenserRepository.save(dispenser);
     }
 
-    @OnClose
-    public void onClose(Session session) throws Exception{
-        System.out.println("Close Session : " + session.toString());
-        clients.remove(session);
-    }
+    public void dispenserStop(){
+        String dispenserId = jwtProvider.getDispenserToken(jwtProvider.getDrinkerTokenInHeader());
+        Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
 
-    @OnError
-    public void onError(Session session, Throwable thr) {}
+        dispenser.setStarted(false);
+
+        dispenser.builder()
+                .id(dispenser.getId())
+                .started(dispenser.isStarted())
+                .build();
+
+        dispenserRepository.save(dispenser);
+    }
 }
