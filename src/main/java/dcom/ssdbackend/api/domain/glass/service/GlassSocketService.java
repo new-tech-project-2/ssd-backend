@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import java.util.Set;
+import java.util.Map;
+
 
 @Service
 @RequiredArgsConstructor
@@ -16,11 +17,13 @@ public class GlassSocketService {
     private final GlassRepository glassRepository;
     private final DispenserRepository dispenserRepository;
 
-    public void addGlass(String payLoadMessage, Set<WebSocketSession> sessions) throws Exception{
-        String glassId = payLoadMessage.substring(9); // 앞에 addGlass: 붙음
+    public void addGlass(WebSocketSession session, String payLoadMessage, Map<WebSocketSession, String> sessions) throws Exception {
+        // addGlassIdAndDispenserId:{glassId}-{dispenserId}
+        String glassId = payLoadMessage.substring(25, 56);
+        String dispenserId = payLoadMessage.substring(57);
 
         Glass glass = new Glass();
-        Dispenser dispenser = dispenserRepository.findById("dispenser01").get();
+        Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
 
         glass.setId(glassId);
         glass.setTotalCapacity(0);
@@ -28,19 +31,26 @@ public class GlassSocketService {
         glass.setDispenser(dispenser);
         glassRepository.save(glass);
 
-        for (WebSocketSession s : sessions) {
-            s.sendMessage(new TextMessage(glassId + "가 등록되었습니다!"));
+        sessions.put(session, dispenserId);
+
+        for (WebSocketSession s : sessions.keySet()) {
+            if (sessions.get(s).equals(dispenserId)) {
+                s.sendMessage(new TextMessage(dispenserId + "에 술잔이 등록되었습니다!"));
+            }
         }
     }
 
-    public void drinkOneGlass(String payLoadMessage, Set<WebSocketSession> sessions) throws Exception {
-        String glassId = payLoadMessage.substring(14); // 앞에 drinkOneGlass: 붙음
+    public void drinkOneGlass(WebSocketSession session, String payLoadMessage, Map<WebSocketSession, String> sessions) throws Exception {
+        // drinkOneGlass:{glassId}
+        String glassId = payLoadMessage.substring(14);
         Glass glass = glassRepository.findById(glassId).get();
         Dispenser dispenser = dispenserRepository.findById(glass.getDispenser().getId()).get();
 
         if (dispenser.isStarted()) {
-            for (WebSocketSession s : sessions) {
-                s.sendMessage(new TextMessage(glass.getDrinkerName() + "님이 한잔 마십니다!"));
+            for (WebSocketSession s : sessions.keySet()) {
+                if (sessions.get(s).equals(dispenser.getId())) {
+                    s.sendMessage(new TextMessage(glass.getDrinkerName() + "님이 한잔 마십니다!"));
+                }
             }
 
             glass.setCurrentDrink(glass.getCurrentDrink() + 1);
@@ -48,14 +58,18 @@ public class GlassSocketService {
             glassRepository.save(glass);
 
             if (glass.getCurrentDrink() >= glass.getTotalCapacity()) {
-                for (WebSocketSession s : sessions) {
-                    s.sendMessage(new TextMessage(glass.getDrinkerName() + "님이 과음중 입니다!"));
+                for (WebSocketSession s : sessions.keySet()) {
+                    if (sessions.get(s).equals(dispenser.getId())) {
+                        s.sendMessage(new TextMessage(glass.getDrinkerName() + "님이 과음중 입니다!"));
+                    }
                 }
             }
         }
-        else{
-            for (WebSocketSession s : sessions) {
-                s.sendMessage(new TextMessage("술자리가 아직 시작되지 않았습니다!"));
+        else {
+            for (WebSocketSession s : sessions.keySet()) {
+                if (sessions.get(s).equals(dispenser.getId())) {
+                    s.sendMessage(new TextMessage("술자리가 시작되지 않았습니다!"));
+                }
             }
         }
     }

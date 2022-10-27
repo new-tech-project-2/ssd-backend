@@ -8,9 +8,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -18,36 +16,35 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private final GlassSocketService glassSocketService;
     private final DispenserSocketService dispenserSocketService;
 
-    private static Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<WebSocketSession>());
+    private static Map<WebSocketSession,String> sessions = new HashMap<WebSocketSession,String>();
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception{
-        sessions.add(session);
+    public void afterConnectionEstablished(WebSocketSession session){
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception{
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payLoadMessage = message.getPayload();
 
-        if (payLoadMessage.substring(0,9).equals("addGlass:")) {
-           glassSocketService.addGlass(payLoadMessage,sessions);
+        if (payLoadMessage.substring(0, 25).equals("addGlassIdAndDispenserId:")) {
+                glassSocketService.addGlass(session, payLoadMessage, sessions);
         }
 
-        if (payLoadMessage.substring(0,14).equals("drinkOneGlass:")) {
-            glassSocketService.drinkOneGlass(payLoadMessage,sessions);
+        if (payLoadMessage.substring(0, 14).equals("drinkOneGlass:")) {
+            glassSocketService.drinkOneGlass(session, payLoadMessage, sessions);
         }
 
-        if(payLoadMessage.substring(0,15).equals("startDispenser:")){
-            dispenserSocketService.startDispenser(payLoadMessage,sessions);
+        if (payLoadMessage.substring(0, 15).equals("startDispenser:")) {
+            dispenserSocketService.startDispenser(session, payLoadMessage, sessions);
         }
 
-        if(payLoadMessage.substring(0,14).equals("stopDispenser:")){
-            dispenserSocketService.stopDispenser(payLoadMessage,sessions);
+        if (payLoadMessage.substring(0, 14).equals("stopDispenser:")) {
+            dispenserSocketService.stopDispenser(session, payLoadMessage, sessions);
         }
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionClosed (WebSocketSession session, CloseStatus status){
         sessions.remove(session);
     }
 }
