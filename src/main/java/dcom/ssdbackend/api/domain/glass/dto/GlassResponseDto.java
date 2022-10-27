@@ -3,7 +3,6 @@ package dcom.ssdbackend.api.domain.glass.dto;
 import dcom.ssdbackend.api.domain.glass.Glass;
 import io.swagger.annotations.ApiModel;
 import lombok.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +19,7 @@ public class GlassResponseDto {
         private String detail;
         private Integer totalCapacity;
         private Integer currentDrink;
-        private Integer lastDrinkTimeStamp;
+        private Long lastDrinkTimeStamp;
         private String dispenserId;
 
         public static GlassInfo of(Glass glass){
