@@ -14,7 +14,7 @@ import java.util.Set;
 public class DispenserSocketService {
     private final DispenserRepository dispenserRepository;
 
-    public void dispenserStart(String payLoadMessage, Set<WebSocketSession> sessions) throws Exception{
+    public void startDispenser(String payLoadMessage, Set<WebSocketSession> sessions) throws Exception{
         String dispenserId = payLoadMessage.substring(15); // 앞에 startDispenser: 붙음
         Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
 
@@ -27,7 +27,7 @@ public class DispenserSocketService {
         }
     }
 
-    public void dispenserStop(String payLoadMessage, Set<WebSocketSession> sessions) throws Exception{
+    public void stopDispenser(String payLoadMessage, Set<WebSocketSession> sessions) throws Exception{
         String dispenserId = payLoadMessage.substring(14); // 앞에 stopDispenser: 붙음
         Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
 

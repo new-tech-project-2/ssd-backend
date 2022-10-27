@@ -38,11 +38,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
 
         if(payLoadMessage.substring(0,15).equals("startDispenser:")){
-            dispenserSocketService.dispenserStart(payLoadMessage,sessions);
+            dispenserSocketService.startDispenser(payLoadMessage,sessions);
         }
 
         if(payLoadMessage.substring(0,14).equals("stopDispenser:")){
-            dispenserSocketService.dispenserStop(payLoadMessage,sessions);
+            dispenserSocketService.stopDispenser(payLoadMessage,sessions);
         }
     }
 
