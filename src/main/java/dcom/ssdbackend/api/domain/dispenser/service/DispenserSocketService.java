@@ -1,47 +1,48 @@
 package dcom.ssdbackend.api.domain.dispenser.service;
 
+import dcom.ssdbackend.api.domain.dispenser.Dispenser;
+import dcom.ssdbackend.api.domain.dispenser.repository.DispenserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import java.util.Map;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
-@ServerEndpoint("/ws/socket/dispenser")
+@RequiredArgsConstructor
 public class DispenserSocketService {
+    private final DispenserRepository dispenserRepository;
 
-    private static Set<Session> clients =
-            Collections.synchronizedSet(new HashSet<Session>());
+    public void startDispenser(WebSocketSession session,String payLoadMessage, Map<WebSocketSession,String> sessions) throws Exception{
+        // startDispenser:{dispenserId}
+        String dispenserId = payLoadMessage.substring(15);
+        Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
 
-    @OnOpen
-    public void onOpen(Session session) throws Exception{
-        if(!clients.contains(session)) {
-            clients.add(session);
-            System.out.println("Open Session : " + session.toString());
-            session.getBasicRemote().sendText(session.toString());
-        }
-        else {
-            System.out.println("Already Opened Session : " + session.toString());
-        }
-    }
+        dispenser.setStarted(true);
 
-    @OnMessage
-    public void onMessage(String message, Session session) throws Exception{
-        System.out.println("Sender : " + session.toString() + " / Receive Message : " + message);
-        for(Session s : clients) {
-            System.out.println("Receive : " + s.toString() + " / Receive Message : " + message);
-            s.getBasicRemote().sendText(message);
+        dispenserRepository.save(dispenser);
+
+        for (WebSocketSession s : sessions.keySet()) {
+            if (sessions.get(s).equals(dispenserId)) {
+                s.sendMessage(new TextMessage("술자리가 시작되었습니다!"));
+            }
         }
     }
 
-    @OnClose
-    public void onClose(Session session) throws Exception{
-        System.out.println("Close Session : " + session.toString());
-        clients.remove(session);
-    }
+    public void stopDispenser(WebSocketSession session,String payLoadMessage, Map<WebSocketSession,String> sessions) throws Exception{
+        // stopDispenser:{dispenserId}
+        String dispenserId = payLoadMessage.substring(14);
+        Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
 
-    @OnError
-    public void onError(Session session, Throwable thr) {}
+        dispenser.setStarted(false);
+
+        dispenserRepository.save(dispenser);
+
+        for (WebSocketSession s : sessions.keySet()) {
+            if (sessions.get(s).equals(dispenserId)) {
+                s.sendMessage(new TextMessage("술자리가 종료되었습니다!"));
+            }
+        }
+    }
 }

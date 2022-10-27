@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class DispenserController {
     private final DispenserRepository dispenserRepository;
     private final DispenserService dispenserService;
-
     private final JwtProvider jwtProvider;
 
     @ApiOperation("사용자 로그인")
@@ -34,19 +33,5 @@ public class DispenserController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<DispenserResponseDto.DispenserInfo> getDispenser() {
         return ResponseEntity.ok(dispenserService.getDispenser());
-    }
-
-    @ApiOperation("디스펜서 시작")
-    @PostMapping("/startdispenser")
-    public ResponseEntity<Void> dispenserStart() {
-        dispenserService.dispenserStart();
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @ApiOperation("디스펜서 중지")
-    @PostMapping("/stopdispenser")
-    public ResponseEntity<Void> dispenserStop() {
-        dispenserService.dispenserStop();
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

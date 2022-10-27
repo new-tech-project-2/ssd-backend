@@ -41,5 +41,4 @@ public class GlassController {
         glassService.deleteGlass(glassId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
-
 }

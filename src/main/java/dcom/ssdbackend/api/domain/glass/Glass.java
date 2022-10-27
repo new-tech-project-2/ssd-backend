@@ -28,7 +28,7 @@ public class Glass {
     private Integer currentDrink;
 
     @Column
-    private Integer lastDrinkTimeStamp;
+    private Long lastDrinkTimeStamp;
 
     @ManyToOne
     private Dispenser dispenser;
