@@ -1,13 +1,26 @@
 version: '3.1'
 services:
   mysql:
+    container_name: mysql_database
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: ssd
-      MYSQL_ROOT_PASSWORD: ssd
-      MYSQL_USER: ssd
-      MYSQL_PASSWORD: ssd
+      MYSQL_DATABASE: ssd_database
+      MYSQL_ROOT_PASSWORD:
+
+  springboot:
+   container_name: springboot_application
+   build:
+    context: ./
+    dockerfile: Dockerfile
+   ports:
+    - "8080:8080"
+   environment:
+    SPRING_DATASOURCE_URL: jdbc:mysql://mysql_database:3306/ssd_database
+    SPRING_DATASOURCE_USERNAME: "root"
+    SPRING_DATASOURCE_PASSWORD:
+   depends_on:
+    - mysql
