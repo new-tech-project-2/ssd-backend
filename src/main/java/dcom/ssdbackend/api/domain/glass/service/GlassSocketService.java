@@ -19,8 +19,8 @@ public class GlassSocketService {
 
     public void addGlass(WebSocketSession session, String payLoadMessage, Map<WebSocketSession, String> sessions) throws Exception {
         // addGlassIdAndDispenserId:{glassId}-{dispenserId}
-        String glassId = payLoadMessage.substring(25, 56);
-        String dispenserId = payLoadMessage.substring(57);
+        String glassId = payLoadMessage.substring(25, 39);
+        String dispenserId = payLoadMessage.substring(40);
 
         Glass glass = new Glass();
         Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
