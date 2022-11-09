@@ -5,6 +5,16 @@ import io.swagger.annotations.ApiModel;
 import lombok.*;
 
 public class DispenserResponseDto {
+    @ApiModel(value = "음주자 토큰 발급")
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DrinkerLogin {
+        private Boolean success;
+        private String drinkerToken;
+    }
 
     @ApiModel(value = "디스펜서 정보 조회")
     @Builder
