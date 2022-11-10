@@ -13,6 +13,16 @@ public class DispenserService {
     private final DispenserRepository dispenserRepository;
     private final JwtProvider jwtProvider;
 
+    public DispenserResponseDto.DrinkerLogin drinkerLogin(){
+        Dispenser dispenser = dispenserRepository.findById(jwtProvider.getDispenserTokenInHeader()).get();
+        String drinkerToken = jwtProvider.generateDrinkerToken(dispenser.getId());
+
+        return DispenserResponseDto.DrinkerLogin.builder()
+                .success(true)
+                .drinkerToken(drinkerToken)
+                .build();
+    }
+
     public DispenserResponseDto.DispenserInfo getDispenser(){
         String dispenserId = jwtProvider.getDispenserToken(jwtProvider.getDrinkerTokenInHeader());
         Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
