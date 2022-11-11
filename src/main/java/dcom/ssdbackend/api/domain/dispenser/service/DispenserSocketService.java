@@ -27,9 +27,10 @@ public class DispenserSocketService {
         valueDispenserMap.put(session, dispenserId);
     }
 
-    public void drinkerLogin(WebSocketSession session, String dispenserId, Map<String, List<WebSocketSession>> drinkerMap) {
+    public void drinkerLogin(WebSocketSession session, String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<WebSocketSession, String> keyDrinkerMap) {
         List<WebSocketSession> drinkerWebSocketSessionList = drinkerMap.get(dispenserId);
         drinkerWebSocketSessionList.add(session);
+        keyDrinkerMap.put(session,dispenserId);
     }
 
     public void startDispenser(String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<String, WebSocketSession> keyDispenserMap) throws IOException {

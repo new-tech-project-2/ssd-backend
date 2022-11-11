@@ -21,6 +21,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public static Map<String,List<WebSocketSession>> drinkerMap = new HashMap<String,List<WebSocketSession>>();
     public static Map<String,WebSocketSession> keyDispenserMap = new HashMap<String,WebSocketSession>();
     public static Map<WebSocketSession,String> valueDispenserMap = new HashMap<WebSocketSession,String>();
+    public static Map<WebSocketSession, String> keyDrinkerMap = new HashMap<WebSocketSession,String>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session){
@@ -37,7 +38,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
 
         if(jsonObject.get("eventType").equals("drinkerLogin")){
-            dispenserSocketService.drinkerLogin(session,(String)jsonObject.get("dispenserId"),drinkerMap);
+            dispenserSocketService.drinkerLogin(session,(String)jsonObject.get("dispenserId"),drinkerMap,keyDrinkerMap);
         }
 
         if(jsonObject.get("eventType").equals("startDispenser")){
@@ -66,8 +67,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
             keyDispenserMap.remove(dispenserId);
             valueDispenserMap.remove(session);
 
-        } else if (drinkerMap.get("dispenser01").contains(session)) {
-            drinkerMap.get("dispenser01").remove(session);
+        } else if(keyDrinkerMap.keySet().contains(session)) {
+            String dispenserId = keyDrinkerMap.get(session);
+            drinkerMap.get(dispenserId).remove(session);
+            keyDrinkerMap.remove(session);
         }
     }
 }
