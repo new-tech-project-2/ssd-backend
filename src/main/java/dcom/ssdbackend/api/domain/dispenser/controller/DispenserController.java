@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = {"Dispenser Controller"})
-@RequestMapping("/dispenser")
 @RestController
 @RequiredArgsConstructor
 public class DispenserController {
@@ -24,7 +23,7 @@ public class DispenserController {
     }
 
     @ApiOperation("디스펜서 정보 조회")
-    @GetMapping("/getdispenser")
+    @GetMapping("/dispenser")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<DispenserResponseDto.DispenserInfo> getDispenser() {
         return ResponseEntity.ok(dispenserService.getDispenser());

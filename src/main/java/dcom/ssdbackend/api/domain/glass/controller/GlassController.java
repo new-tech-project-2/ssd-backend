@@ -15,28 +15,27 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Api(tags = {"Glass Controller"})
-@RequestMapping("/glass")
 @RestController
 @RequiredArgsConstructor
 public class GlassController {
    private final GlassService glassService;
 
     @ApiOperation("술잔 정보 조회")
-    @GetMapping("/getglass")
+    @GetMapping("/glass")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<GlassResponseDto.GlassInfo>> getGlass() {
         return ResponseEntity.ok(glassService.getGlass());
     }
 
     @ApiOperation("술잔 정보 수정")
-    @PatchMapping("/updateglass/{glassId}")
+    @PatchMapping("/glass/{glassId}")
     public ResponseEntity<Void> updateGlass(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId, @Validated @RequestBody GlassRequestDto.UpdateGlass updateGlass) {
         glassService.updateGlass(glassId,updateGlass);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @ApiOperation("술잔 정보 삭제")
-    @DeleteMapping("/deleteglass/{glassId}")
+    @DeleteMapping("/glass/{glassId}")
     public ResponseEntity<Void> deleteGlass(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId) {
         glassService.deleteGlass(glassId);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
