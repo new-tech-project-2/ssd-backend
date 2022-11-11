@@ -59,6 +59,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             if(!drinkerWebSocketSessionList.isEmpty()) {
                 for (WebSocketSession s : drinkerWebSocketSessionList) {
                     s.sendMessage(new TextMessage("{\"eventType\":\"end\"}"));
+                    s.close();
                 }
             }
             drinkerMap.remove(dispenserId);
