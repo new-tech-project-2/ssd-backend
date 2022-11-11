@@ -26,24 +26,27 @@ public class GlassService {
 
 
     public void addGlass(GlassRequestDto.AddGlass addGlass) throws IOException{
-        Glass glass = new Glass();
-        Dispenser dispenser = dispenserRepository.findById(addGlass.getDispenserId()).get();
 
-        glass.setId(addGlass.getGlassId());
-        glass.setDrinkerName("exampleDrinkerName");
-        glass.setDetail("exampleDetail");
-        glass.setTotalCapacity(0);
-        glass.setCurrentDrink(0);
-        glass.setLastDrinkTimeStamp(0L);
-        glass.setDispenser(dispenser);
+        if(!glassRepository.existsById(addGlass.getGlassId())) {
+            Glass glass = new Glass();
+            Dispenser dispenser = dispenserRepository.findById(addGlass.getDispenserId()).get();
 
-        glassRepository.save(glass);
+            glass.setId(addGlass.getGlassId());
+            glass.setDrinkerName("exampleDrinkerName");
+            glass.setDetail("exampleDetail");
+            glass.setTotalCapacity(0);
+            glass.setCurrentDrink(0);
+            glass.setLastDrinkTimeStamp(0L);
+            glass.setDispenser(dispenser);
 
-        List<WebSocketSession> drinkerWebSocketSessionList = WebSocketHandler.drinkerMap.get(glass.getDispenser().getId());
+            glassRepository.save(glass);
 
-        if(!drinkerWebSocketSessionList.isEmpty()) {
-            for (WebSocketSession s : drinkerWebSocketSessionList) {
-                s.sendMessage(new TextMessage("{\"eventType\":\"change\"}"));
+            List<WebSocketSession> drinkerWebSocketSessionList = WebSocketHandler.drinkerMap.get(glass.getDispenser().getId());
+
+            if (!drinkerWebSocketSessionList.isEmpty()) {
+                for (WebSocketSession s : drinkerWebSocketSessionList) {
+                    s.sendMessage(new TextMessage("{\"eventType\":\"change\"}"));
+                }
             }
         }
     }
