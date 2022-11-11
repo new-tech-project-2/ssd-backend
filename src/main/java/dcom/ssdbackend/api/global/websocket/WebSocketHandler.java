@@ -51,12 +51,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed (WebSocketSession session, CloseStatus status) throws IOException {
-        if(keyDispenserMap.containsValue(session)){
+        if (keyDispenserMap.containsValue(session)) {
             String dispenserId = valueDispenserMap.get(session);
 
             List<WebSocketSession> drinkerWebSocketSessionList = drinkerMap.get(dispenserId);
 
-            if(!drinkerWebSocketSessionList.isEmpty()) {
+            if (!drinkerWebSocketSessionList.isEmpty()) {
                 for (WebSocketSession s : drinkerWebSocketSessionList) {
                     s.sendMessage(new TextMessage("{\"eventType\":\"end\"}"));
                     s.close();
@@ -65,6 +65,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
             drinkerMap.remove(dispenserId);
             keyDispenserMap.remove(dispenserId);
             valueDispenserMap.remove(session);
+
+        } else if (drinkerMap.get("dispenser01").contains(session)) {
+            drinkerMap.get("dispenser01").remove(session);
         }
     }
 }
