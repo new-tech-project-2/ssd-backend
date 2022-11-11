@@ -23,12 +23,12 @@ public class DispenserResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DispenserInfo {
-        private String id;
+        private String dispenserId;
         private Boolean started;
 
         public static DispenserResponseDto.DispenserInfo of(Dispenser dispenser) {
             return DispenserInfo.builder()
-                    .id(dispenser.getId())
+                    .dispenserId(dispenser.getId())
                     .started(dispenser.isStarted())
                     .build();
         }

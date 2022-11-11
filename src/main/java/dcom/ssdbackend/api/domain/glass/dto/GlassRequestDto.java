@@ -4,7 +4,18 @@ import io.swagger.annotations.ApiModel;
 import lombok.*;
 
 public class GlassRequestDto {
-    @ApiModel(value="사용자의 술잔 정보 수정")
+    @ApiModel(value="술잔 등록")
+    @Builder
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AddGlass {
+        private String glassId;
+        private String dispenserId;
+    }
+
+    @ApiModel(value="술잔 수정")
     @Builder
     @Getter
     @Setter
