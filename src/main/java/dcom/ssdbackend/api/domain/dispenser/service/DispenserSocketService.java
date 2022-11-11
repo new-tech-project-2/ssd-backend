@@ -2,6 +2,8 @@ package dcom.ssdbackend.api.domain.dispenser.service;
 
 import dcom.ssdbackend.api.domain.dispenser.Dispenser;
 import dcom.ssdbackend.api.domain.dispenser.repository.DispenserRepository;
+import dcom.ssdbackend.api.domain.glass.Glass;
+import dcom.ssdbackend.api.domain.glass.repository.GlassRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
@@ -17,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DispenserSocketService {
     private final DispenserRepository dispenserRepository;
+    private final GlassRepository glassRepository;
 
     public void dispenserLogin(WebSocketSession session, String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<String, WebSocketSession> keyDispenserMap, Map<WebSocketSession, String> valueDispenserMap) {
         drinkerMap.put(dispenserId, new ArrayList<>());
@@ -50,6 +53,7 @@ public class DispenserSocketService {
 
     public void stopDispenser(String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<String, WebSocketSession> keyDispenserMap) throws IOException {
         Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
+        List<Glass> glasses = glassRepository.findAllByDispenser(dispenser);
 
         dispenser.setStarted(false);
 
@@ -64,6 +68,13 @@ public class DispenserSocketService {
             }
 
             dispenserWebSocketSession.sendMessage(new TextMessage("{\"eventType\":\"stop\"}"));
+
+            for(Glass g : glasses){
+                g.setCurrentDrink(0);
+                g.setLastDrinkTimeStamp(0L);
+
+                glassRepository.save(g);
+            }
         }
     }
 }
