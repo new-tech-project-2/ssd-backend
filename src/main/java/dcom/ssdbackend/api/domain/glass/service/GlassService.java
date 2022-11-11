@@ -30,9 +30,12 @@ public class GlassService {
         Dispenser dispenser = dispenserRepository.findById(addGlass.getDispenserId()).get();
 
         glass.setId(addGlass.getGlassId());
-        glass.setDispenser(dispenser);
+        glass.setDrinkerName("exampleDrinkerName");
+        glass.setDetail("exampleDetail");
+        glass.setTotalCapacity(0);
         glass.setCurrentDrink(0);
         glass.setLastDrinkTimeStamp(0L);
+        glass.setDispenser(dispenser);
 
         glassRepository.save(glass);
 
