@@ -22,7 +22,7 @@ public class DispenserController {
         return ResponseEntity.ok(dispenserService.drinkerLogin());
     }
 
-    @ApiOperation("디스펜서 정보 조회")
+    @ApiOperation("디스펜서 조회")
     @GetMapping("/dispenser")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<DispenserResponseDto.DispenserInfo> getDispenser() {

@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GlassResponseDto {
-    @ApiModel(value = "술잔 정보 조회")
+    @ApiModel(value = "술잔 조회")
     @Builder
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GlassInfo{
-        private String id;
+    public static class GlassInfo {
+        private String glassId;
         private String drinkerName;
         private String detail;
         private Integer totalCapacity;
@@ -22,9 +22,9 @@ public class GlassResponseDto {
         private Long lastDrinkTimeStamp;
         private String dispenserId;
 
-        public static GlassInfo of(Glass glass){
+        public static GlassInfo of(Glass glass) {
             return GlassInfo.builder()
-                    .id(glass.getId())
+                    .glassId(glass.getId())
                     .drinkerName(glass.getDrinkerName())
                     .detail(glass.getDetail())
                     .totalCapacity(glass.getTotalCapacity())
@@ -37,5 +37,5 @@ public class GlassResponseDto {
         public static List<GlassInfo> of(List<Glass> glasses) {
             return glasses.stream().map(GlassInfo::of).collect(Collectors.toList());
         }
-}
+    }
 }

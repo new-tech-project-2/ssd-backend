@@ -1,22 +1,26 @@
 package dcom.ssdbackend.api.global.websocket;
 
 import dcom.ssdbackend.api.domain.dispenser.service.DispenserSocketService;
-import dcom.ssdbackend.api.domain.glass.service.GlassSocketService;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import java.io.IOException;
 import java.util.*;
 
 @RequiredArgsConstructor
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
-    private final GlassSocketService glassSocketService;
     private final DispenserSocketService dispenserSocketService;
 
-    private static Map<WebSocketSession,String> sessions = new HashMap<WebSocketSession,String>();
+    public static Map<String,List<WebSocketSession>> drinkerMap = new HashMap<String,List<WebSocketSession>>();
+    public static Map<String,WebSocketSession> keyDispenserMap = new HashMap<String,WebSocketSession>();
+    public static Map<WebSocketSession,String> valueDispenserMap = new HashMap<WebSocketSession,String>();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session){
@@ -25,26 +29,41 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payLoadMessage = message.getPayload();
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(payLoadMessage);
 
-        if (payLoadMessage.substring(0, 25).equals("addGlassIdAndDispenserId:")) {
-                glassSocketService.addGlass(session, payLoadMessage, sessions);
+        if(jsonObject.get("eventType").equals("dispenserLogin")){
+            dispenserSocketService.dispenserLogin(session,(String)jsonObject.get("dispenserId"),drinkerMap,keyDispenserMap,valueDispenserMap);
         }
 
-        if (payLoadMessage.substring(0, 14).equals("drinkOneGlass:")) {
-            glassSocketService.drinkOneGlass(session, payLoadMessage, sessions);
+        if(jsonObject.get("eventType").equals("drinkerLogin")){
+            dispenserSocketService.drinkerLogin(session,(String)jsonObject.get("dispenserId"),drinkerMap);
         }
 
-        if (payLoadMessage.substring(0, 15).equals("startDispenser:")) {
-            dispenserSocketService.startDispenser(session, payLoadMessage, sessions);
+        if(jsonObject.get("eventType").equals("startDispenser")){
+            dispenserSocketService.startDispenser((String)jsonObject.get("dispenserId"),drinkerMap,keyDispenserMap);
         }
 
-        if (payLoadMessage.substring(0, 14).equals("stopDispenser:")) {
-            dispenserSocketService.stopDispenser(session, payLoadMessage, sessions);
+        if(jsonObject.get("eventType").equals("stopDispenser")){
+            dispenserSocketService.stopDispenser((String)jsonObject.get("dispenserId"),drinkerMap,keyDispenserMap);
         }
     }
 
     @Override
-    public void afterConnectionClosed (WebSocketSession session, CloseStatus status){
-        sessions.remove(session);
+    public void afterConnectionClosed (WebSocketSession session, CloseStatus status) throws IOException {
+        if(keyDispenserMap.containsValue(session)){
+            String dispenserId = valueDispenserMap.get(session);
+
+            List<WebSocketSession> drinkerWebSocketSessionList = drinkerMap.get(dispenserId);
+
+            if(!drinkerWebSocketSessionList.isEmpty()) {
+                for (WebSocketSession s : drinkerWebSocketSessionList) {
+                    s.sendMessage(new TextMessage("{\"eventType\":\"end\"}"));
+                }
+            }
+            drinkerMap.remove(dispenserId);
+            keyDispenserMap.remove(dispenserId);
+            valueDispenserMap.remove(session);
+        }
     }
 }
