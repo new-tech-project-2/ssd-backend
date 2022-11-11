@@ -53,7 +53,7 @@ public class DispenserSocketService {
 
     public void stopDispenser(String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<String, WebSocketSession> keyDispenserMap) throws IOException {
         Dispenser dispenser = dispenserRepository.findById(dispenserId).get();
-        List<Glass> glasses = glassRepository.findAllByDispenser(dispenser);
+        List<Glass> glasses = glassRepository.findByDispenser(dispenser);
 
         dispenser.setStarted(false);
 

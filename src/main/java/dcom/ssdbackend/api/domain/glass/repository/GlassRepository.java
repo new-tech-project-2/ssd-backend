@@ -10,5 +10,6 @@ import java.util.List;
 
 @Repository
 public interface GlassRepository extends JpaRepository<Glass, String> {
-    List<Glass> findAllByDispenser(Dispenser dispenser);
+    @Query("select g from Glass g where g.dispenser = :dispenser")
+    List<Glass> findByDispenser(Dispenser dispenser);
 }
