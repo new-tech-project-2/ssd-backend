@@ -51,8 +51,8 @@ public class GlassController {
     }
 
     @ApiOperation("술 마시기")
-    @PatchMapping("/glass/{glassId}/drink")
-    public ResponseEntity<Void> updateGlass(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId) throws IOException {
+    @PostMapping("/glass/{glassId}/drink")
+    public ResponseEntity<Void> drinkOneGlass(@ApiParam(value="술잔 ID", required = true) @PathVariable final String glassId) throws IOException {
         glassService.drinkOneGlass(glassId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
