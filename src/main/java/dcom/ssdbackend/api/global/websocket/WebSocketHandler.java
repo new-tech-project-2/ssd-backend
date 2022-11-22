@@ -41,6 +41,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
             dispenserSocketService.drinkerLogin(session,(String)jsonObject.get("dispenserId"),drinkerMap,keyDrinkerMap);
         }
 
+        if(jsonObject.get("eventType").equals("drinkerLogout")){
+            dispenserSocketService.drinkerLogout(session,(String)jsonObject.get("dispenserId"),drinkerMap,keyDrinkerMap);
+        }
+
         if(jsonObject.get("eventType").equals("startDispenser")){
             dispenserSocketService.startDispenser((String)jsonObject.get("dispenserId"),drinkerMap,keyDispenserMap);
         }
@@ -55,11 +59,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
         if (keyDispenserMap.containsValue(session)) {
             String dispenserId = valueDispenserMap.get(session);
 
-            List<WebSocketSession> drinkerWebSocketSessionList = drinkerMap.get(dispenserId);
-
-            if (!drinkerWebSocketSessionList.isEmpty()) {
-                for (WebSocketSession s : drinkerWebSocketSessionList) {
+            if (!drinkerMap.get(dispenserId).isEmpty()) {
+                for (WebSocketSession s : drinkerMap.get(dispenserId)) {
                     s.sendMessage(new TextMessage("{\"eventType\":\"end\"}"));
+                    keyDrinkerMap.remove(s);
                     s.close();
                 }
             }
