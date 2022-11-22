@@ -28,9 +28,13 @@ public class DispenserSocketService {
     }
 
     public void drinkerLogin(WebSocketSession session, String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<WebSocketSession, String> keyDrinkerMap) {
-        List<WebSocketSession> drinkerWebSocketSessionList = drinkerMap.get(dispenserId);
-        drinkerWebSocketSessionList.add(session);
+        drinkerMap.get(dispenserId).add(session);
         keyDrinkerMap.put(session,dispenserId);
+    }
+    public void drinkerLogout(WebSocketSession session, String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<WebSocketSession, String> keyDrinkerMap) throws IOException {
+        drinkerMap.get(dispenserId).remove(session);
+        keyDrinkerMap.remove(session,dispenserId);
+        session.close();
     }
 
     public void startDispenser(String dispenserId, Map<String, List<WebSocketSession>> drinkerMap, Map<String, WebSocketSession> keyDispenserMap) throws IOException {
